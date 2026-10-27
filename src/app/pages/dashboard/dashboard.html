@@ -1,0 +1,153 @@
+
+<div class="dashboard">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <h2>Incidencias</h2>
+      <span>Panel de administración</span>
+    </div>
+
+    <nav>
+      <a class="nav-item active" href="#">
+        <span>▦</span> Resumen
+      </a>
+      <a class="nav-item" href="#incidencias">
+        <span>☷</span> Incidencias
+      </a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      Proyecto Intermodular 2026
+      <button class="logout-button" (click)="logout()">
+            Cerrar sesión
+        </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <h1>Panel de administración</h1>
+        <p>Gestiona las incidencias ciudadanas</p>
+      </div>
+      <span class="admin-badge">Administrador</span>
+    </header>
+
+    <section class="summary">
+      <article class="summary-card">
+        <span>Total de incidencias</span>
+        <strong>{{ incidencias.length }}</strong>
+      </article>
+
+      <article class="summary-card">
+        <span>Pendientes</span>
+        <strong>{{ contarPorEstado('Pendiente') }}</strong>
+      </article>
+
+      <article class="summary-card">
+        <span>En revisión</span>
+        <strong>{{ contarPorEstado('En revisión') }}</strong>
+      </article>
+
+      <article class="summary-card">
+        <span>Resueltas</span>
+        <strong>{{ contarPorEstado('Resuelta') }}</strong>
+      </article>
+    </section>
+
+    <section class="incidents-section" id="incidencias">
+      <div class="section-heading">
+        <div>
+          <h2>Incidencias recientes</h2>
+          <p>Listado de incidencias comunicadas por los ciudadanos</p>
+          
+            <div class="search-container">
+                <input
+                    type="text"
+                    [(ngModel)]="busqueda"
+                    placeholder="Buscar por título o ubicación..."
+                    aria-label="Buscar incidencias por título o ubicación"
+                >
+            </div>
+            
+            <div class="filter-container">
+            <label for="estado">Filtrar por estado:</label>
+
+            <select
+                id="estado"
+                name="estado"
+                [(ngModel)]="estadoSeleccionado"
+            >
+                <option value="Todas">Todos los estados</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="En revisión">En revisión</option>
+                <option value="Resuelta">Resuelta</option>
+            </select>
+            </div>
+
+
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Incidencia</th>
+              <th>Categoría</th>
+              <th>Ubicación</th>
+              <th>Fecha</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (incidencia of incidenciasFiltradas(); track incidencia.id) {
+              <tr>
+                <td>
+                  <strong>{{ incidencia.titulo }}</strong>
+                  <small>#{{ incidencia.id }}</small>
+                </td>
+                <td>{{ incidencia.categoria }}</td>
+                <td>{{ incidencia.ubicacion }}</td>
+                <td>{{ incidencia.fecha }}</td>
+                <td>
+                  <span class="priority"
+                    [class.high]="incidencia.prioridad === 'Alta'"
+                    [class.medium]="incidencia.prioridad === 'Media'"
+                    [class.low]="incidencia.prioridad === 'Baja'">
+                    {{ incidencia.prioridad }}
+                  </span>
+                </td>
+                
+                <td>
+                <select
+                    [value]="incidencia.estado"
+                    (change)="cambiarEstado(incidencia.id, $any($event.target).value)"
+                    class="estado-select"
+                    [class.pendiente]="incidencia.estado === 'Pendiente'"
+                    [class.revision]="incidencia.estado === 'En revisión'"
+                    [class.resuelta]="incidencia.estado === 'Resuelta'"
+                >
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En revisión">En revisión</option>
+                    <option value="Resuelta">Resuelta</option>
+                </select>
+                </td>
+
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">No hay incidencias registradas.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+</div>
+
