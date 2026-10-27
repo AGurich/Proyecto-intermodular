@@ -1,10 +1,9 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
 import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
 
 @Component({
-  imports: [RouterOutlet, Login, Dashboard],
+  imports: [Login, Dashboard],
   standalone: true,
   selector: 'app-root',
   styleUrl: './app.css',

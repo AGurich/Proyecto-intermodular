@@ -1,6 +1,9 @@
 
 import { Component, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { IncidenciasService } from '../../services/incidencias';
+import { Incidencia } from '../../models/incidencia';
+
 @Component({
   imports: [FormsModule],
   selector: 'app-dashboard',
@@ -8,35 +11,11 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './dashboard.html',
 })
 export class Dashboard {
-  incidencias = [
-    {
-      id: 1,
-      titulo: 'Farola fundida',
-      categoria: 'Alumbrado',
-      ubicacion: 'Calle Mayor, 12',
-      fecha: '25/10/2026',
-      prioridad: 'Media',
-      estado: 'Pendiente',
-    },
-    {
-      id: 2,
-      titulo: 'Bache en la calzada',
-      categoria: 'Vía pública',
-      ubicacion: 'Avenida del Parque, 8',
-      fecha: '25/10/2026',
-      prioridad: 'Alta',
-      estado: 'En revisión',
-    },
-    {
-      id: 3,
-      titulo: 'Contenedor desbordado',
-      categoria: 'Limpieza',
-      ubicacion: 'Plaza Central',
-      fecha: '24/10/2026',
-      prioridad: 'Baja',
-      estado: 'Resuelta',
-    },
-  ];
+  incidencias: Incidencia[] = [];
+
+  constructor(private incidenciasService: IncidenciasService) {
+    this.incidencias = this.incidenciasService.obtenerTodas();
+  }
   contarPorEstado(estado: string): number {
   return this.incidencias.filter(
     incidencia => incidencia.estado === estado
@@ -79,16 +58,24 @@ incidenciasFiltradas() {
     );
 }
 
-cambiarEstado(id: number, nuevoEstado: string): void {
-  const incidencia = this.incidencias.find(item => item.id === id);
 
-  if (
-    incidencia &&
-    ['Pendiente', 'En revisión', 'Resuelta'].includes(nuevoEstado)
-  ) {
-    incidencia.estado = nuevoEstado;
+cambiarEstado(id: number, nuevoEstado: string): void {
+  const estadosValidos = [
+    'Pendiente',
+    'En revisión',
+    'Resuelta',
+  ] as const;
+
+  if (!estadosValidos.includes(nuevoEstado as typeof estadosValidos[number])) {
+    return;
   }
+
+  this.incidenciasService.cambiarEstado(
+    id,
+    nuevoEstado as typeof estadosValidos[number]
+  );
 }
+
 
 
 }
